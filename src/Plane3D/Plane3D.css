@@ -1,0 +1,12 @@
+
+.Plane3D{
+	width: 100vw;
+	height: 80vh;
+	background-color: lime;
+}
+.ThreeCanvas{
+	width: 100%;
+	height: 100%;
+	
+	background-color: black;;
+}

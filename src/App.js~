@@ -1,4 +1,5 @@
 import React from 'react';
+import logo from './logo.svg';
 import Plane3D from './Plane3D/Plane3D';
 import './App.css';
 

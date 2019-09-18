@@ -1,0 +1,91 @@
+import * as THREE from 'three';
+import PIPE from './PipeThree';
+
+class Grid extends THREE.Group{
+	constructor(dims, stepsx, stepsy, material, labels, labelGenerator){
+		super();
+		
+		this.dims = dims;
+		this.stepsx = stepsx;
+		this.stepsy = stepsy;
+		
+		let gridStrokeWidth = 0.025;
+		let gridAxisPadding = 0.5;
+		
+		let xlines = [];
+		let ylines = [];
+		
+		let xlabels = [];
+		let ylabels = [];
+		let labelColor = 0x00aaff;
+		let labelAxisPadding = gridAxisPadding;
+		let fontSize = 0.3;
+		
+		if(!!stepsx){
+			let stepx = dims.width / stepsx;
+			for(let x=0; x <= stepsx; ++x){
+				let xstart = dims.x + x * stepx;
+				let v0 = new THREE.Vector3(xstart, dims.y - gridAxisPadding,           0);
+				let v1 = new THREE.Vector3(xstart, dims.y + dims.height, 0);
+				let lineMesh = new PIPE.StraightPipeMesh(v0, v1, material, {radius: gridStrokeWidth});
+				xlines.push(lineMesh);
+				
+				if(!!labels && !!labels.xlabels && labels.xlabels.length > x){
+					let label = labels.xlabels[x];
+					let labelPos = new THREE.Vector3(xstart, dims.y - labelAxisPadding, 0);
+					let labelMesh = labelGenerator({label: label, 
+						position: labelPos,
+						color: labelColor,
+						fontSize
+					});
+					labelMesh.geometry.rotateZ(Math.PI * 0.1);
+					
+					let bndngBox = this.evalMeshBoundingBox(labelMesh);
+					let bndngSze = bndngBox.getSize();
+					labelMesh.position.set(labelPos.x - bndngSze.x * 0.5, labelPos.y - bndngSze.y * 0.5 - 0.1, labelPos.z);
+					
+					xlabels.push( labelMesh );
+				}
+			}
+		}
+		if(!!stepsy){
+			let stepy = dims.height / stepsy;
+			for(let y=0; y <= stepsy; ++y){
+				let ystart = dims.y + y * stepy;
+				let v0 = new THREE.Vector3(dims.x - gridAxisPadding,              ystart, 0);
+				let v1 = new THREE.Vector3(dims.x + dims.width, ystart, 0);
+				let lineMesh = new PIPE.StraightPipeMesh(v0, v1, material, {radius: gridStrokeWidth});
+				ylines.push(lineMesh);
+				
+				if(!!labels && !!labels.ylabels && labels.ylabels.length > y){
+					let label = labels.ylabels[y];
+					let labelPos = new THREE.Vector3(dims.x - labelAxisPadding, ystart, 0);
+					let labelMesh = labelGenerator({
+						label: label,
+						position: labelPos,
+						color: labelColor,
+						fontSize
+					});
+					
+					let bndngBox = this.evalMeshBoundingBox(labelMesh);
+					let bndngSze = bndngBox.getSize();
+					labelMesh.position.set(labelPos.x - bndngSze.x * 0.5, labelPos.y - bndngSze.y * 0.5, labelPos.z);
+					
+					ylabels.push( labelMesh );
+				}
+			}
+		}
+		
+		xlines.forEach(mesh=>this.add(mesh));
+		ylines.forEach(mesh=>this.add(mesh));
+		xlabels.forEach(mesh=>this.add(mesh));
+		ylabels.forEach(mesh=>this.add(mesh));
+	}
+	evalMeshBoundingBox(mesh){
+		mesh.geometry.computeBoundingBox(); // 1. compute boundingBox
+		return mesh.geometry.boundingBox.clone(); // 2. then fetch, clone and return boundingBox
+	}
+}
+
+
+export default Grid;

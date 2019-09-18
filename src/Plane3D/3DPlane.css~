@@ -1,0 +1,8 @@
+
+.3DPlane{
+	background-color: red;
+	width: 100vw;
+}
+.ThreeCanvas{
+	width: 80%;
+}

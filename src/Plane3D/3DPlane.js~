@@ -1,0 +1,27 @@
+import React, { Component } from 'react';
+import './3DPlane.css';
+
+class Plane extends Component{
+	constructor(props){
+		super(props);
+		
+	}
+	goToArduinoHomepage(){
+	}
+
+   componentDidMount(){
+	}
+	render(){
+		return (
+			<div className="3DPlane">				
+				<canvas className="ThreeCanvas">
+				</canvas>
+			</div>
+		);
+	}
+}
+
+
+
+export default Plane;
+
